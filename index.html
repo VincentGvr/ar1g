@@ -32,20 +32,21 @@
   .btn.ghost{background:transparent; color:var(--accent); border:1px solid var(--accent);}
   .btn:active{transform:translateY(1px);}
 
-  .player-row{display:flex; align-items:center; gap:9px; padding:8px 9px; border:1px solid var(--line);
-    border-radius:11px; margin-bottom:7px; background:var(--panel2); flex-wrap:wrap;}
+  .player-row{display:flex; align-items:center; gap:6px; padding:6px 7px; border:1px solid var(--line);
+    border-radius:10px; margin-bottom:6px; background:var(--panel2); flex-wrap:nowrap; overflow:hidden;}
   .player-row.out{opacity:.5;}
-  .avail{width:28px; height:28px; border-radius:50%; border:2px solid var(--line); background:transparent;
-    cursor:pointer; flex-shrink:0; display:grid; place-items:center; font-size:.9rem; color:#fff; line-height:1;}
+  .avail{width:24px; height:24px; border-radius:50%; border:2px solid var(--line); background:transparent;
+    cursor:pointer; flex:0 0 auto; display:grid; place-items:center; font-size:.8rem; color:#fff; line-height:1;}
   .avail.on{background:var(--ok); border-color:var(--ok);}
-  .pname{font-size:.92rem; font-weight:600; flex:1; min-width:66px;}
-  .rbtns{display:flex; gap:4px; flex-wrap:wrap;}
-  .rbtn{min-width:30px; height:28px; padding:0 8px; border-radius:8px; border:1.5px solid var(--line);
-    background:var(--panel); color:var(--muted); font-size:.76rem; font-weight:700; cursor:pointer; line-height:1;}
+  .pname{font-size:.85rem; font-weight:600; flex:1 1 auto; min-width:0;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .rbtns{display:flex; gap:3px; flex:0 0 auto;}
+  .rbtn{min-width:22px; height:26px; padding:0 5px; border-radius:7px; border:1.5px solid var(--line);
+    background:var(--panel); color:var(--muted); font-size:.72rem; font-weight:700; cursor:pointer; line-height:1;}
   .rbtn:hover{border-color:var(--accent2);}
-  .seg{display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; flex-shrink:0;}
-  .seg button{background:var(--panel); color:var(--muted); border:none; padding:6px 11px; cursor:pointer; font-size:.78rem;}
-  .seg button.on{background:var(--accent); color:#052a3a; font-weight:700;}
+  .place{flex:0 0 auto; min-width:40px; height:26px; padding:0 7px; border-radius:7px; border:1.5px solid var(--line);
+    background:var(--panel); color:var(--muted); font-size:.72rem; font-weight:700; cursor:pointer; line-height:1;}
+  .place.on{background:var(--accent); color:#052a3a; border-color:var(--accent);}
 
   .court-wrap{display:flex; flex-direction:column; align-items:center;}
   svg{width:100%; max-width:440px; height:auto;}
@@ -113,13 +114,16 @@ const MAX_COACH=2;
 
 /* slots terrain : v 0=fond, 1=filet ; back=ligne arrière */
 const SLOTS=[
-  {role:'reception', u:0.17, v:0.80, back:0},
-  {role:'central',   u:0.50, v:0.80, back:0},
-  {role:'pointu',    u:0.83, v:0.80, back:0},
-  {role:'reception', u:0.17, v:0.36, back:1},
-  {role:'central',   u:0.50, v:0.36, back:1},
-  {role:'passeur',   u:0.83, v:0.36, back:1},
-  {role:'libero',    u:0.50, v:0.12, back:1},
+  // avant (bleu) — proche du filet
+  {role:'pointu',    u:0.15, v:0.88, back:0},
+  {role:'central',   u:0.50, v:0.88, back:0},
+  {role:'reception', u:0.82, v:0.88, back:0},
+  // arrière (rouge)
+  {role:'reception', u:0.47, v:0.20, back:1},
+  {role:'passeur',   u:0.15, v:0.40, back:1},
+  {role:'libero',    u:0.82, v:0.40, back:1},
+  // 2e central·e (remplacé·e par le·la libéro) — derrière la ligne de fond
+  {role:'central',   u:0.50, v:-0.08, back:1, sub:true},
 ];
 
 /* ================= GÉOMÉTRIE ================= */
@@ -213,6 +217,7 @@ function renderCourt(){
     const {x,y}=toXY(s.u,s.v);
     if(pi>=0){ used.add(pi); drawToken(svg,x,y,s.role,s.back,state.players[pi].name); }
     else drawGhost(svg,x,y,s.role);
+    if(s.sub){ const nt=E('text',{x,y:y-R-5,'text-anchor':'middle','font-size':8.5,fill:'#94a3b8'}); nt.textContent='rotation'; svg.appendChild(nt); }
   });
   const host=document.getElementById('courtHost');
   host.innerHTML=''; host.appendChild(svg);
@@ -306,12 +311,11 @@ function renderRoster(){
       row.appendChild(rb);
 
       if(p.role && p.role!=='coach'){
-        const seg=document.createElement('div'); seg.className='seg';
-        const bF=document.createElement('button'); bF.textContent='Terrain'; bF.className=p.onField?'on':'';
-        bF.onclick=()=>{ p.onField=true; commit(); };
-        const bB=document.createElement('button'); bB.textContent='Banc'; bB.className=p.onField?'':'on';
-        bB.onclick=()=>{ p.onField=false; commit(); };
-        seg.appendChild(bF); seg.appendChild(bB); row.appendChild(seg);
+        const pl=document.createElement('button'); pl.className='place'+(p.onField?' on':'');
+        pl.textContent=p.onField?'Ter.':'Banc';
+        pl.title=p.onField?'Sur le terrain (cliquer pour le banc)':'Sur le banc (cliquer pour le terrain)';
+        pl.onclick=()=>{ p.onField=!p.onField; commit(); };
+        row.appendChild(pl);
       }
     }
     host.appendChild(row);
