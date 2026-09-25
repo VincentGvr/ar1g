@@ -134,6 +134,10 @@ const roleByKey=Object.fromEntries(ROLES.map(r=>[r.key,r]));
 const NEED={passeur:1, central:2, reception:2, pointu:1, libero:1};
 const NEED_LABEL={passeur:'passeur·euse', central:'central·e', reception:'R4', pointu:'pointu·e', libero:'libéro'};
 const MAX_COACH=1;
+const FORCED_COACH=new Set(['Bérangère']);
+function enforceRoles(){
+  state.players.forEach(p=>{ if(FORCED_COACH.has(p.name) && p.available){ p.role='coach'; p.onField=false; } });
+}
 
 /* slots terrain : v 0=fond, 1=filet ; back=ligne arrière */
 const SLOTS=[
@@ -318,6 +322,16 @@ function renderRoster(){
 
     if(p.available){
       const rb=document.createElement('div'); rb.className='rbtns';
+      if(FORCED_COACH.has(p.name)){
+        const r=roleByKey['coach'];
+        const b=document.createElement('button'); b.className='rbtn on'; b.textContent=r.label;
+        b.title=r.name+' (rôle fixe)'; b.disabled=true; b.style.cursor='default';
+        b.style.background=r.color; b.style.borderColor=r.color; b.style.color='#fff';
+        rb.appendChild(b);
+        row.appendChild(rb);
+        host.appendChild(row);
+        return;
+      }
       ROLES.forEach(r=>{
         const b=document.createElement('button'); b.className='rbtn'+(p.role===r.key?' on':'');
         b.textContent=r.label; b.title=r.name;
@@ -346,7 +360,7 @@ function render(){
   renderBench(used);
   renderBanner();
 }
-function commit(){ save(); render(); }
+function commit(){ enforceRoles(); save(); render(); }
 
 /* ================= ACTIONS ================= */
 function resetAll(){
@@ -356,6 +370,7 @@ function resetAll(){
 
 /* ================= INIT ================= */
 load();
+enforceRoles();
 document.getElementById('resetBtn').onclick=resetAll;
 (function(){
   const card=document.getElementById('rosterCard'), btn=document.getElementById('rosterToggle');
