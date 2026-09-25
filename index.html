@@ -39,8 +39,10 @@
     cursor:pointer; flex-shrink:0; display:grid; place-items:center; font-size:.9rem; color:#fff; line-height:1;}
   .avail.on{background:var(--ok); border-color:var(--ok);}
   .pname{font-size:.92rem; font-weight:600; flex:1; min-width:66px;}
-  .role-sel{background:var(--panel); color:var(--text); border:1px solid var(--line);
-    padding:6px 8px; border-radius:8px; font-size:.82rem; margin:0;}
+  .rbtns{display:flex; gap:4px; flex-wrap:wrap;}
+  .rbtn{min-width:30px; height:28px; padding:0 8px; border-radius:8px; border:1.5px solid var(--line);
+    background:var(--panel); color:var(--muted); font-size:.76rem; font-weight:700; cursor:pointer; line-height:1;}
+  .rbtn:hover{border-color:var(--accent2);}
   .seg{display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; flex-shrink:0;}
   .seg button{background:var(--panel); color:var(--muted); border:none; padding:6px 11px; cursor:pointer; font-size:.78rem;}
   .seg button.on{background:var(--accent); color:#052a3a; font-weight:700;}
@@ -293,11 +295,15 @@ function renderRoster(){
     const nm=document.createElement('span'); nm.className='pname'; nm.textContent=p.name; row.appendChild(nm);
 
     if(p.available){
-      const sel=document.createElement('select'); sel.className='role-sel';
-      const o0=document.createElement('option'); o0.value=''; o0.textContent='rôle…'; sel.appendChild(o0);
-      ROLES.forEach(r=>{ const o=document.createElement('option'); o.value=r.key; o.textContent=r.name; if(p.role===r.key)o.selected=true; sel.appendChild(o); });
-      sel.onchange=()=>{ p.role=sel.value||null; if(p.role==='coach'||!p.role) p.onField=false; commit(); };
-      row.appendChild(sel);
+      const rb=document.createElement('div'); rb.className='rbtns';
+      ROLES.forEach(r=>{
+        const b=document.createElement('button'); b.className='rbtn'+(p.role===r.key?' on':'');
+        b.textContent=r.label; b.title=r.name;
+        if(p.role===r.key){ b.style.background=r.color; b.style.borderColor=r.color; b.style.color=(r.key==='libero'?'#3f2d00':'#fff'); }
+        b.onclick=()=>{ p.role=(p.role===r.key?null:r.key); if(p.role==='coach'||!p.role) p.onField=false; commit(); };
+        rb.appendChild(b);
+      });
+      row.appendChild(rb);
 
       if(p.role && p.role!=='coach'){
         const seg=document.createElement('div'); seg.className='seg';
