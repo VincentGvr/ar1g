@@ -79,7 +79,6 @@
     <div class="card">
       <h2>Effectif</h2>
       <div class="actions">
-        <button class="btn" id="autoBtn">Composer auto</button>
         <button class="btn ghost" id="resetBtn">Réinitialiser</button>
       </div>
       <div id="roster"></div>
@@ -89,7 +88,6 @@
       <div id="banner" class="banner"></div>
       <div id="courtHost"></div>
       <div id="benchHost" class="bench-area"></div>
-      <div class="legend" id="legend"></div>
     </div>
   </div>
 </div>
@@ -156,8 +154,6 @@ function fieldPlayers(){ return state.players.filter(p=>p.available && p.onField
 function coaches(){ return state.players.filter(p=>p.available && p.role==='coach'); }
 
 /* ================= TERRAIN (SVG) ================= */
-function ringColor(back){ return back? 'var(--back)' : 'var(--front)'; }
-
 function courtBase(){
   const svg=E('svg',{viewBox:`0 0 ${VB_W} ${VB_H}`});
   const defs=E('defs',{});
@@ -187,8 +183,6 @@ function drawToken(svg,x,y,role,back,name){
   const g=E('g',{});
   const c=E('circle',{cx:x,cy:y,r:R,fill:'#f8fafc',stroke:col,'stroke-width':3,filter:'url(#sh)'});
   g.appendChild(c);
-  const ring=E('circle',{cx:x,cy:y,r:R+3,fill:'none',stroke:ringColor(back),'stroke-width':1.5,'stroke-opacity':.85});
-  g.appendChild(ring);
   const t=E('text',{x,y:y+4,'text-anchor':'middle','font-size':11,'font-weight':700,fill:col});
   t.textContent=roleByKey[role].label; g.appendChild(t);
   const nm=E('text',{x,y:y+R+13,'text-anchor':'middle','font-size':10,fill:'var(--text)'});
@@ -244,9 +238,9 @@ function group(host,title,items){
 
 function renderBench(usedField){
   const host=document.getElementById('benchHost'); host.innerHTML='';
-  const bench=[], overflow=[], coach=[], absent=[];
+  const bench=[], overflow=[], coach=[];
   state.players.forEach((p,i)=>{
-    if(!p.available){ absent.push(p); return; }
+    if(!p.available){ return; }
     if(p.role==='coach'){ coach.push(p); return; }
     if(p.onField && p.role){ if(!usedField.has(i)) overflow.push(p); return; }
     bench.push(p); // dispo, non-titulaire (rôle attribué ou non)
@@ -254,8 +248,7 @@ function renderBench(usedField){
   group(host,'Banc (remplaçant·es)',bench);
   group(host,'Surnombre (hors compo)',overflow);
   group(host,'Coachs',coach);
-  group(host,'Absent·es',absent);
-  if(!bench.length && !overflow.length && !coach.length && !absent.length){
+  if(!bench.length && !overflow.length && !coach.length){
     const n=document.createElement('div'); n.className='empty-note'; n.textContent='Tout le monde est sur le terrain.'; host.appendChild(n);
   }
 }
@@ -322,13 +315,6 @@ function renderRoster(){
   });
 }
 
-/* ================= LÉGENDE ================= */
-function renderLegend(){
-  const el=document.getElementById('legend');
-  el.innerHTML = ROLES.map(r=>`<span class="dot" style="background:${r.color}"></span>${r.label} ${r.name}`).join(' · ')
-    + `<br><span class="dot" style="background:var(--front)"></span>contour ligne avant · <span class="dot" style="background:var(--back)"></span>contour ligne arrière`;
-}
-
 /* ================= RENDER GLOBAL ================= */
 function render(){
   renderRoster();
@@ -339,17 +325,6 @@ function render(){
 function commit(){ save(); render(); }
 
 /* ================= ACTIONS ================= */
-function autoCompose(){
-  state.players.forEach(p=>p.onField=false);
-  for(const role in NEED){
-    let filled=0;
-    for(const p of state.players){
-      if(filled>=NEED[role]) break;
-      if(p.available && p.role===role){ p.onField=true; filled++; }
-    }
-  }
-  commit();
-}
 function resetAll(){
   state.players.forEach(p=>{ p.available=true; p.role=null; p.onField=false; });
   commit();
@@ -357,8 +332,6 @@ function resetAll(){
 
 /* ================= INIT ================= */
 load();
-renderLegend();
-document.getElementById('autoBtn').onclick=autoCompose;
 document.getElementById('resetBtn').onclick=resetAll;
 render();
 </script>
