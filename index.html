@@ -80,7 +80,7 @@
 <body>
 <div class="wrap">
   <h1>🏐 AR1G — Compo d'équipe</h1>
-  <p class="sub">Coche qui est <b>disponible</b>, attribue un rôle à chacun·e, puis répartis l'équipe entre le <b>terrain</b> et le <b>banc</b>. La compo terrain valide 1 passeur·euse, 2 central·es, 2 R4, 1 pointu·e et 1 libéro (7 actif·ves), plus 1 ou 2 coachs.</p>
+  <p class="sub">Coche qui est <b>disponible</b>, attribue un rôle à chacun·e, puis répartis l'équipe entre le <b>terrain</b> et le <b>banc</b>. (Compo valide : 1 passeur·euse, 2 central·es, 2 R4, 1 pointu·e et 1 libéro (7 actif·ves), plus 1 coachs).</p>
 
   <div class="grid">
     <div class="card">
@@ -103,8 +103,8 @@
 
 <script>
 /* ================= DONNÉES ================= */
-const NAMES=["Maxime","Cyril","Jérome","Honoré","Flavion","JB","Vincent","Chris","Iban",
-  "Nuno","Jérémie","Iker","Clérik","Mathieu","Adrien","Bérangère","Aloïs"];
+const NAMES=["Maxime","Cyril","Jérome","Honoré","Flavien","JB","Vincent","Chris","Iban",
+  "Nuno","Jérémie","Iker","Clérik","Mathieu","Adrien","Bérangère"];
 
 const ROLES=[
   {key:'passeur',   name:'Passeur·euse',        label:'Pa', color:'#38bdf8'},
@@ -117,7 +117,7 @@ const ROLES=[
 const roleByKey=Object.fromEntries(ROLES.map(r=>[r.key,r]));
 const NEED={passeur:1, central:2, reception:2, pointu:1, libero:1};
 const NEED_LABEL={passeur:'passeur·euse', central:'central·e', reception:'R4', pointu:'pointu·e', libero:'libéro'};
-const MAX_COACH=2;
+const MAX_COACH=1;
 
 /* slots terrain : v 0=fond, 1=filet ; back=ligne arrière */
 const SLOTS=[
