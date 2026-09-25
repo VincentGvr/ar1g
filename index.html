@@ -114,14 +114,13 @@ const MAX_COACH=2;
 const SLOTS=[
   // avant (bleu) — proche du filet
   {role:'pointu',    u:0.15, v:0.88, back:0},
-  {role:'central',   u:0.50, v:0.88, back:0},
+  {role:'central',   u:0.42, v:0.88, back:0},
+  {role:'central',   u:0.58, v:0.88, back:0},
   {role:'reception', u:0.82, v:0.88, back:0},
   // arrière (rouge)
   {role:'reception', u:0.47, v:0.20, back:1},
   {role:'passeur',   u:0.15, v:0.40, back:1},
   {role:'libero',    u:0.82, v:0.40, back:1},
-  // 2e central·e (remplacé·e par le·la libéro) — derrière la ligne de fond
-  {role:'central',   u:0.50, v:-0.08, back:1, sub:true},
 ];
 
 /* ================= GÉOMÉTRIE ================= */
@@ -173,8 +172,6 @@ function courtBase(){
   svg.appendChild(E('line',{x1:CX0-8,y1:NET_Y,x2:CX1+8,y2:NET_Y,stroke:'#f1f5f9','stroke-width':6,'stroke-dasharray':'4 3'}));
   svg.appendChild(E('circle',{cx:CX0-8,cy:NET_Y,r:3,fill:'#f1f5f9'}));
   svg.appendChild(E('circle',{cx:CX1+8,cy:NET_Y,r:3,fill:'#f1f5f9'}));
-  const lab=(x,y,t)=>{ const e=E('text',{x,y,fill:'#94a3b8','font-size':11,'text-anchor':'middle'}); e.textContent=t; svg.appendChild(e); };
-  lab(VB_W/2, NET_Y+15, 'Filet');
   return svg;
 }
 
@@ -211,7 +208,6 @@ function renderCourt(){
     const {x,y}=toXY(s.u,s.v);
     if(pi>=0){ used.add(pi); drawToken(svg,x,y,s.role,s.back,state.players[pi].name); }
     else drawGhost(svg,x,y,s.role);
-    if(s.sub){ const nt=E('text',{x,y:y-R-5,'text-anchor':'middle','font-size':8.5,fill:'#94a3b8'}); nt.textContent='rotation'; svg.appendChild(nt); }
   });
   const host=document.getElementById('courtHost');
   host.innerHTML=''; host.appendChild(svg);
