@@ -22,11 +22,6 @@
   h1{font-size:1.45rem; margin:0 0 4px; display:flex; align-items:center; gap:10px;}
   .sub{color:var(--text); margin:0 0 18px; font-size:.9rem; line-height:1.5;}
   .grid{display:grid; grid-template-columns:minmax(300px,360px) 1fr; gap:18px; align-items:start;}
-  @media(max-width:820px){ .grid{grid-template-columns:1fr;}
-    .bench-area .chips{flex-direction:row; flex-wrap:wrap; align-items:flex-start;} }
-  @media(max-width:560px){
-    .court-row{flex-direction:column; align-items:stretch;}
-    .bench-area{flex:1 1 auto; max-width:520px; width:100%; margin-top:16px; align-self:center;} }
   .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px;}
   .card h2{font-size:.75rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 10px;}
   .card-head{display:flex; align-items:center; justify-content:space-between; gap:8px;}
@@ -83,6 +78,14 @@
   .legend{margin-top:14px; font-size:.78rem; color:var(--muted); line-height:1.7;}
   .legend .dot{display:inline-block; width:11px; height:11px; border-radius:50%; margin:0 5px; vertical-align:middle;}
   text{user-select:none;}
+
+  @media(max-width:820px){
+    .grid{grid-template-columns:1fr;}
+    .court-row{flex-direction:column; align-items:stretch;}
+    .court-host{width:100%;}
+    .bench-area{flex:1 1 auto; max-width:520px; width:100%; margin-top:16px; align-self:center;}
+    .bench-area .chips{flex-direction:row; flex-wrap:wrap; align-items:flex-start;}
+  }
 </style>
 </head>
 <body>
